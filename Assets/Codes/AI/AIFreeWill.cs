@@ -43,6 +43,7 @@ public class AIFreeWill : MonoBehaviour
 
     public GameObject basePoint;
 
+
     protected virtual void Awake()
     {
         if (agent == null)
@@ -163,7 +164,7 @@ public class AIFreeWill : MonoBehaviour
 
     public bool SetandWaitTargetPosition(Vector3 newTargetPosition)
     {
-        targetPosition = newTargetPosition;
+        targetPosition = new Vector3(newTargetPosition.x, 0, newTargetPosition.z);
         agent.SetDestination(targetPosition);
         agent.isStopped = false;
         ChangeState(AIState.Walking);
