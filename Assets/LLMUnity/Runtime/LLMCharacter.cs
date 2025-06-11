@@ -359,7 +359,7 @@ namespace LLMUnity
             return stopAll;
         }
 
-        protected virtual ChatRequest GenerateRequest(string prompt)
+        public virtual ChatRequest GenerateRequest(string prompt)
         {
             // setup the request struct
             ChatRequest chatRequest = new ChatRequest();
@@ -713,6 +713,41 @@ namespace LLMUnity
             Ret result = ConvertContent(callResult, getContent);
             if (!callbackCalled) callback?.Invoke(result);
             return result;
+        }
+        public async Task<string> RawComplete(string fullPrompt)
+        {
+            ChatRequest request = new ChatRequest
+            {
+                prompt = fullPrompt,
+                id_slot = slot,
+                temperature = temperature,
+                top_k = topK,
+                top_p = topP,
+                min_p = minP,
+                n_predict = numPredict,
+                n_keep = -1,
+                stream = false,
+                stop = null,
+                typical_p = typicalP,
+                repeat_penalty = repeatPenalty,
+                repeat_last_n = repeatLastN,
+                penalize_nl = penalizeNl,
+                presence_penalty = presencePenalty,
+                frequency_penalty = frequencyPenalty,
+                penalty_prompt = null,
+                mirostat = mirostat,
+                mirostat_tau = mirostatTau,
+                mirostat_eta = mirostatEta,
+                grammar = grammarString,
+                json_schema = grammarJSONString,
+                seed = seed,
+                ignore_eos = ignoreEos,
+                logit_bias = logitBias,
+                n_probs = nProbs,
+                cache_prompt = false
+            };
+
+            return await CompletionRequest(request);
         }
     }
 

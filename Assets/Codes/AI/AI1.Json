@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "action": { "type": "string" },
+    "position": {
+      "type": "object",
+      "properties": {
+        "x": { "type": "number", "minimum": -10, "maximum": 10 },
+        "y": { "type": "number", "minimum": 0, "maximum": 2 },
+        "z": { "type": "number", "minimum": -10, "maximum": 10 }
+      },
+      "required": ["x", "y", "z"]
+    }
+  }
+}

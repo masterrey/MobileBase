@@ -135,13 +135,6 @@ public class AIFreeWill : MonoBehaviour
         }
     }
 
-    public void SetTargetPosition(Vector3 newTargetPosition)
-    {
-        targetPosition = newTargetPosition;
-        agent.SetDestination(targetPosition);
-        agent.isStopped = false;
-        ChangeState(AIState.Walking);
-    }
 
     /// <summary>
     /// Return to base

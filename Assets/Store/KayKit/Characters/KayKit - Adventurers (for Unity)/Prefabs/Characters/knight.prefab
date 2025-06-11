@@ -459,6 +459,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1157100718060288491}
   - component: {fileID: 5259002207622955503}
+  - component: {fileID: 6682790079291975845}
+  - component: {fileID: 6766279068857185193}
+  - component: {fileID: 7356415499415348733}
   m_Layer: 0
   m_Name: knight
   m_TagString: Untagged
@@ -486,6 +489,7 @@ Transform:
   - {fileID: 486164106956741938}
   - {fileID: 540300703016250744}
   - {fileID: 7359633418550880060}
+  - {fileID: 6114526148767647196}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &5259002207622955503
@@ -498,7 +502,7 @@ Animator:
   m_GameObject: {fileID: 2244014083398086627}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 0b3da1f3c3be7b14bbbc3e7c0295b0b4, type: 2}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1fb10419b5d98d4b85597d0f21ecd4d, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -510,6 +514,75 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6682790079291975845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2244014083398086627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35cfdbfd07597594fbf8dc0f7c4d41f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agent: {fileID: 6766279068857185193}
+  targetPosition: {x: 0, y: 0, z: 0}
+  animator: {fileID: 5259002207622955503}
+  currentState: 0
+  currentType: 0
+  basePoint: {fileID: 0}
+  hand: {fileID: 1892958067457808443}
+  foodAmount: 0
+  maxFoodAmount: 5
+  maxDistance: 20
+  foodFound: {fileID: 0}
+  foodCollectedWithSucess: 0
+  lastSystemMessage: 
+  llmCharacter: {fileID: 2752680549461913909}
+--- !u!195 &6766279068857185193
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2244014083398086627}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!135 &7356415499415348733
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2244014083398086627}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 4.39
+  m_Center: {x: 0, y: 0, z: 4.09}
 --- !u!1 &2277508476350426277
 GameObject:
   m_ObjectHideFlags: 0
@@ -610,6 +683,98 @@ Transform:
   - {fileID: 1650714311814982653}
   m_Father: {fileID: 7553203744781802507}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2925860736286104392
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6114526148767647196}
+  - component: {fileID: 2752680549461913909}
+  m_Layer: 0
+  m_Name: LLMCharacter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6114526148767647196
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2925860736286104392}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1036.0653, y: 495.014, z: -0.40521336}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1157100718060288491}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2752680549461913909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2925860736286104392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f6c87a428fd5d0be9bbc686bdc8c3c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  advancedOptions: 1
+  remote: 0
+  _llm: {fileID: 0}
+  APIKey: 
+  host: localhost
+  port: 13333
+  numRetries: 10
+  save: 
+  saveCache: 0
+  debugPrompt: 1
+  numPredict: -1
+  slot: -1
+  grammar: 
+  grammarJSON: AI1.Json
+  cachePrompt: 1
+  seed: 0
+  temperature: 0.498
+  topK: 40
+  topP: 0.9
+  minP: 0.05
+  repeatPenalty: 1.1
+  presencePenalty: 0
+  frequencyPenalty: 0
+  typicalP: 1
+  repeatLastN: 64
+  penalizeNl: 1
+  penaltyPrompt: 
+  mirostat: 0
+  mirostatTau: 5
+  mirostatEta: 0.1
+  nProbs: 0
+  ignoreEos: 0
+  nKeep: -1
+  stop: []
+  stream: 1
+  playerName: user
+  AIName: Farmer
+  prompt: 
+  setNKeepToPrompt: 1
+  chat: []
+  grammarString: 
+  grammarJSONString: "{\r\n  \"type\": \"object\",\r\n  \"properties\": {\r\n   
+    \"action\": { \"type\": \"string\" },\r\n    \"position\": {\r\n      \"type\":
+    \"object\",\r\n      \"properties\": {\r\n        \"x\": { \"type\": \"number\",
+    \"minimum\": -10, \"maximum\": 10 },\r\n        \"y\": { \"type\": \"number\",
+    \"minimum\": 0, \"maximum\": 2 },\r\n        \"z\": { \"type\": \"number\", \"minimum\":
+    -10, \"maximum\": 10 }\r\n      },\r\n      \"required\": [\"x\", \"y\", \"z\"]\r\n   
+    }\r\n  }\r\n}\r\n"
 --- !u!1 &2983918075566912567
 GameObject:
   m_ObjectHideFlags: 0

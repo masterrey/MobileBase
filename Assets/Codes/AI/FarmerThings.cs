@@ -2,6 +2,8 @@ using LLMUnity;
 using System.Collections;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using UnityEngine.LightTransport;
+using UnityEngine.UIElements;
 
 public class FarmerThings : AIFreeWill
 {
@@ -47,9 +49,8 @@ public class FarmerThings : AIFreeWill
                         $"Base position: {basePoint.transform.position.x}, {basePoint.transform.position.y}, {basePoint.transform.position.z}\n" +
                         $"Food found: {(foodFound != null ? foodFound.name : "none")}\n" +
                         $"Food position: {(foodFound != null ? foodFound.transform.position.x + ", " + foodFound.transform.position.y + ", " + foodFound.transform.position.z : "none")}\n" +
-                        "Your current goal is to gather food when it's close and return it to your base.\n\n" +
+                        "Your current goal is to gather food when it's close and return it to your base, you can grab food when you are close to than, you can drop the food when you are on the base.\n\n" +
                         "Your available actions are:\n" +
-                        "- search_for_food\n" +
                         "- return_to_base\n" +
                         "- grab_food\n" +
                         "- drop_food\n" +
@@ -64,13 +65,23 @@ public class FarmerThings : AIFreeWill
                         "or\n" +
                         "{ \"action\": \"go_to_position\", \"position\": { \"x\": 10.5, \"y\": 0.0, \"z\": -3.2 } }\n\n" +
                         "IMPORTANT:\n" +
-                        "- Only include the `position` field if the action is \"go_to_position\".\n" +
-                        "- Always use dot (.) as the decimal separator, not comma (,).\n" +
-                        "- Do NOT use markdown code blocks.\n";
+                        "- ONLY include the `position` field if the action is \"go_to_position\".\n" +
+                        "- ALWAYS USE DOT (.) AS THE DECIMAL SEPARATOR, NEVER COMMA (,).\n" +
+                        "- Do NOT use markdown code blocks.\n" +
+                        "- Only suggest coordinates that are within the world bounds.\n" +
+                        $"- Valid positions must be within {maxDistance} meters of the current position.\n" +
+                        "- Do not invent distant or unrelated coordinates. Use known object positions when available.\n";
 
-        llmCharacter.ClearChat();
-        llmCharacter.SetPrompt(prompt, clearChat: true); // define o estado atual como system prompt
-        var task = llmCharacter.Chat("", addToHistory: false);
+        try
+        {
+            llmCharacter.ClearChat();
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("Failed to clear chat: " + ex.Message);
+        }
+
+        var task = llmCharacter.Chat(prompt);
         yield return new WaitUntil(() => task.IsCompleted);
 
         string rawResponse = task.Result;
@@ -82,6 +93,9 @@ public class FarmerThings : AIFreeWill
             .Replace("\n", "")
             .Replace("\r", "")
             .Trim();
+
+        // Replace commas with dots for decimal parsing
+        response = Regex.Replace(response, @"(?<=""[xyz]""\s*:\s*)(-?\d+),(\d+)", "$1.$2");
 
         LLMActionResponse result = null;
         try
@@ -113,9 +127,6 @@ public class FarmerThings : AIFreeWill
 
         switch (result.action)
         {
-            case "search_for_food":
-                SearchForFood(onComplete);
-                break;
             case "return_to_base":
                 ReturnToBase();
                 onComplete?.Invoke();
@@ -129,13 +140,14 @@ public class FarmerThings : AIFreeWill
                 onComplete?.Invoke();
                 break;
             case "idle":
-                SetTargetPosition(transform.position);
                 onComplete?.Invoke();
                 break;
             case "go_to_position":
+                Debug.Log($"Moving");
                 if (result.position != null)
                 {
-                    SetTargetPosition(new Vector3(result.position.x, result.position.y, result.position.z));
+                    Debug.Log($"to position: {result.position.x}, {result.position.y}, {result.position.z}");
+                    SetandWaitTargetPosition(new Vector3(result.position.x, result.position.y, result.position.z));
                     onComplete?.Invoke();
                 }
                 break;
@@ -145,22 +157,6 @@ public class FarmerThings : AIFreeWill
                 onComplete?.Invoke();
                 break;
         }
-    }
-
-    public void SearchForFood(System.Action onComplete)
-    {
-        Collider[] hits = Physics.OverlapSphere(transform.position, maxDistance);
-        foodFound = null;
-        foreach (var hit in hits)
-        {
-            if (hit.CompareTag("Food") && hit.gameObject.activeInHierarchy)
-            {
-                foodFound = hit.gameObject;
-                break;
-            }
-        }
-        lastSystemMessage = foodFound != null ? "Food found nearby." : "No food found nearby.";
-        onComplete?.Invoke();
     }
 
     public void DropFood()
@@ -179,8 +175,9 @@ public class FarmerThings : AIFreeWill
 
     public void GrabFood()
     {
-        if (foodFound != null && Vector3.Distance(foodFound.transform.position, transform.position) < 1f)
+        if (foodFound != null)
         {
+            SetandWaitTargetPosition(targetPosition = foodFound.transform.position);
             if (hand != null && foodAmount < maxFoodAmount)
             {
                 foodFound.transform.SetParent(hand.transform);
@@ -199,11 +196,15 @@ public class FarmerThings : AIFreeWill
         }
     }
 
-    public void GotoTheFood()
+    public void OnTriggerEnter(Collider other)
     {
-        if (foodFound != null)
+        if (other.CompareTag("Food"))
         {
-            SetTargetPosition(foodFound.transform.position);
+            if (foodFound == null)
+            {
+                foodFound = other.gameObject;
+                Debug.Log($"Food found: {foodFound.name}");
+            }
         }
     }
 }

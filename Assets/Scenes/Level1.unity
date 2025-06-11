@@ -380,92 +380,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &213263441
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 213263443}
-  - component: {fileID: 213263442}
-  m_Layer: 0
-  m_Name: LLMCharacter
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &213263442
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 213263441}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f6c87a428fd5d0be9bbc686bdc8c3c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  advancedOptions: 0
-  remote: 0
-  _llm: {fileID: 973278097}
-  APIKey: 
-  host: localhost
-  port: 13333
-  numRetries: 10
-  save: 
-  saveCache: 0
-  debugPrompt: 1
-  numPredict: -1
-  slot: -1
-  grammar: 
-  grammarJSON: 
-  cachePrompt: 1
-  seed: 0
-  temperature: 0.2
-  topK: 40
-  topP: 0.9
-  minP: 0.05
-  repeatPenalty: 1.1
-  presencePenalty: 0
-  frequencyPenalty: 0
-  typicalP: 1
-  repeatLastN: 64
-  penalizeNl: 1
-  penaltyPrompt: 
-  mirostat: 0
-  mirostatTau: 5
-  mirostatEta: 0.1
-  nProbs: 0
-  ignoreEos: 0
-  nKeep: -1
-  stop: []
-  stream: 1
-  playerName: user
-  AIName: Farmer
-  prompt: 
-  setNKeepToPrompt: 1
-  chat: []
-  grammarString: 
-  grammarJSONString: 
---- !u!4 &213263443
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 213263441}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1036.0653, y: 495.014, z: -0.40521336}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8577246798971523374}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &216419377
 GameObject:
   m_ObjectHideFlags: 0
@@ -663,7 +577,8 @@ MonoBehaviour:
   maxDistance: 20
   foodFound: {fileID: 0}
   foodCollectedWithSucess: 0
-  llmCharacter: {fileID: 213263442}
+  lastSystemMessage: 
+  llmCharacter: {fileID: 0}
 --- !u!135 &618853120
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -3205,12 +3120,17 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: d1fb10419b5d98d4b85597d0f21ecd4d, type: 2}
+    - target: {fileID: 6682790079291975845, guid: d035779bf520f38499966b00a58bd75f, type: 3}
+      propertyPath: agent
+      value: 
+      objectReference: {fileID: 618853118}
+    - target: {fileID: 6682790079291975845, guid: d035779bf520f38499966b00a58bd75f, type: 3}
+      propertyPath: basePoint
+      value: 
+      objectReference: {fileID: 2013165906}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 1157100718060288491, guid: d035779bf520f38499966b00a58bd75f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 213263443}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2244014083398086627, guid: d035779bf520f38499966b00a58bd75f, type: 3}
       insertIndex: -1
@@ -3222,11 +3142,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 618853120}
   m_SourcePrefab: {fileID: 100100000, guid: d035779bf520f38499966b00a58bd75f, type: 3}
---- !u!4 &8577246798971523374 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1157100718060288491, guid: d035779bf520f38499966b00a58bd75f, type: 3}
-  m_PrefabInstance: {fileID: 8577246798971523373}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
