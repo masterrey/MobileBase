@@ -460,8 +460,9 @@ GameObject:
   - component: {fileID: 1157100718060288491}
   - component: {fileID: 5259002207622955503}
   - component: {fileID: 6682790079291975845}
-  - component: {fileID: 6766279068857185193}
   - component: {fileID: 7356415499415348733}
+  - component: {fileID: 226498563263757169}
+  - component: {fileID: 2875587558283577530}
   m_Layer: 0
   m_Name: knight
   m_TagString: Untagged
@@ -489,7 +490,6 @@ Transform:
   - {fileID: 486164106956741938}
   - {fileID: 540300703016250744}
   - {fileID: 7359633418550880060}
-  - {fileID: 6114526148767647196}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &5259002207622955503
@@ -526,7 +526,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35cfdbfd07597594fbf8dc0f7c4d41f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 6766279068857185193}
+  agent: {fileID: 226498563263757169}
   targetPosition: {x: 0, y: 0, z: 0}
   animator: {fileID: 5259002207622955503}
   currentState: 0
@@ -539,29 +539,7 @@ MonoBehaviour:
   foodFound: {fileID: 0}
   foodCollectedWithSucess: 0
   lastSystemMessage: 
-  llmCharacter: {fileID: 2752680549461913909}
---- !u!195 &6766279068857185193
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2244014083398086627}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  llmCharacter: {fileID: 2875587558283577530}
 --- !u!135 &7356415499415348733
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -583,6 +561,96 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 4.39
   m_Center: {x: 0, y: 0, z: 4.09}
+--- !u!195 &226498563263757169
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2244014083398086627}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &2875587558283577530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2244014083398086627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f6c87a428fd5d0be9bbc686bdc8c3c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  advancedOptions: 0
+  remote: 0
+  _llm: {fileID: 0}
+  APIKey: 
+  host: localhost
+  port: 13333
+  numRetries: 10
+  save: 
+  saveCache: 0
+  debugPrompt: 0
+  numPredict: -1
+  slot: -1
+  grammar: 
+  grammarJSON: 
+  cachePrompt: 1
+  seed: 0
+  temperature: 0.2
+  topK: 40
+  topP: 0.9
+  minP: 0.05
+  repeatPenalty: 1.1
+  presencePenalty: 0
+  frequencyPenalty: 0
+  typicalP: 1
+  repeatLastN: 64
+  penalizeNl: 1
+  penaltyPrompt: 
+  mirostat: 0
+  mirostatTau: 5
+  mirostatEta: 0.1
+  nProbs: 0
+  ignoreEos: 0
+  nKeep: -1
+  stop: []
+  stream: 1
+  playerName: user
+  AIName: Farmer
+  prompt: "You are an autonomous farmer agent inside a simulation.\nYour current
+    goal is to gather food when it's close and return it to your base, you can grab
+    food when you are close to than, you can drop the food when you are on the base.
+    Your available actions are:\r\n- return_to_base\r\n- grab_food\r\n- drop_food\r\n-
+    idle\r\n- go_to_position(x,y,z)\n Rules:\r\n 1. Return ONLY one action in JSON
+    format as shown below.\r\n 2. Use `go_to_position` only if it's necessary, with
+    coordinates in float.\r\n 3. Do not explain or include any extra text.\r\n Example:\r\n
+    { \\\"action\\\": \\\"search_for_food\\\" }\r\n or\r\n { \\\"action\\\": \\\"go_to_position\\\",
+    \\\"position\\\": { \\\"x\\\": 10.5, \\\"y\\\": 0.0, \\\"z\\\": -3.2 } }\n IMPORTANT:
+    \r\n- ONLY include the `position` field if the action is \\\"go_to_position\\\".\r\n-
+    ALWAYS USE DOT (.) AS THE DECIMAL SEPARATOR, NEVER COMMA (,).\r\n- Do NOT use
+    markdown code blocks.\r\n- Only suggest coordinates that are within the world
+    bounds.\r\n- Valid positions must be within {maxDistance} meters of the current
+    position.\r\n- Do not invent distant or unrelated coordinates. Use known object
+    positions when available."
+  setNKeepToPrompt: 1
+  chat: []
+  grammarString: 
+  grammarJSONString: 
 --- !u!1 &2277508476350426277
 GameObject:
   m_ObjectHideFlags: 0
@@ -683,98 +751,6 @@ Transform:
   - {fileID: 1650714311814982653}
   m_Father: {fileID: 7553203744781802507}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2925860736286104392
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6114526148767647196}
-  - component: {fileID: 2752680549461913909}
-  m_Layer: 0
-  m_Name: LLMCharacter
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6114526148767647196
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2925860736286104392}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1036.0653, y: 495.014, z: -0.40521336}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1157100718060288491}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2752680549461913909
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2925860736286104392}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f6c87a428fd5d0be9bbc686bdc8c3c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  advancedOptions: 1
-  remote: 0
-  _llm: {fileID: 0}
-  APIKey: 
-  host: localhost
-  port: 13333
-  numRetries: 10
-  save: 
-  saveCache: 0
-  debugPrompt: 1
-  numPredict: -1
-  slot: -1
-  grammar: 
-  grammarJSON: AI1.Json
-  cachePrompt: 1
-  seed: 0
-  temperature: 0.498
-  topK: 40
-  topP: 0.9
-  minP: 0.05
-  repeatPenalty: 1.1
-  presencePenalty: 0
-  frequencyPenalty: 0
-  typicalP: 1
-  repeatLastN: 64
-  penalizeNl: 1
-  penaltyPrompt: 
-  mirostat: 0
-  mirostatTau: 5
-  mirostatEta: 0.1
-  nProbs: 0
-  ignoreEos: 0
-  nKeep: -1
-  stop: []
-  stream: 1
-  playerName: user
-  AIName: Farmer
-  prompt: 
-  setNKeepToPrompt: 1
-  chat: []
-  grammarString: 
-  grammarJSONString: "{\r\n  \"type\": \"object\",\r\n  \"properties\": {\r\n   
-    \"action\": { \"type\": \"string\" },\r\n    \"position\": {\r\n      \"type\":
-    \"object\",\r\n      \"properties\": {\r\n        \"x\": { \"type\": \"number\",
-    \"minimum\": -10, \"maximum\": 10 },\r\n        \"y\": { \"type\": \"number\",
-    \"minimum\": 0, \"maximum\": 2 },\r\n        \"z\": { \"type\": \"number\", \"minimum\":
-    -10, \"maximum\": 10 }\r\n      },\r\n      \"required\": [\"x\", \"y\", \"z\"]\r\n   
-    }\r\n  }\r\n}\r\n"
 --- !u!1 &2983918075566912567
 GameObject:
   m_ObjectHideFlags: 0

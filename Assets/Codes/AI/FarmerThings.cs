@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Text.RegularExpressions;
 using UnityEngine.LightTransport;
 using UnityEngine.UIElements;
+using TMPro;
 
 public class FarmerThings : AIFreeWill
 {
@@ -14,6 +15,7 @@ public class FarmerThings : AIFreeWill
     [SerializeField] GameObject foodFound;
     [SerializeField] float foodCollectedWithSucess = 0;
     [SerializeField] string lastSystemMessage = string.Empty;
+    [SerializeField] TextMeshPro commentBubble;
 
     public LLMCharacter llmCharacter;
 
@@ -22,6 +24,7 @@ public class FarmerThings : AIFreeWill
     {
         public string action;
         public PositionData position;
+        public string comment;
 
         [System.Serializable]
         public class PositionData
@@ -40,7 +43,7 @@ public class FarmerThings : AIFreeWill
 
     public IEnumerator AskToLLMWhatToDo(System.Action onComplete)
     {
-        string prompt = $"You are an autonomous farmer agent inside a simulation.\n" +
+        string prompt =
                         $"Last system message: {lastSystemMessage}\n" +
                         $"Food: {foodAmount}/{maxFoodAmount}\n" +
                         $"Current state: {currentState.ToString().ToLower()}\n" +
@@ -48,33 +51,12 @@ public class FarmerThings : AIFreeWill
                         $"Hand: {(hand != null && hand.transform.childCount > 0 ? "has food" : "empty")}\n" +
                         $"Base position: {basePoint.transform.position.x}, {basePoint.transform.position.y}, {basePoint.transform.position.z}\n" +
                         $"Food found: {(foodFound != null ? foodFound.name : "none")}\n" +
-                        $"Food position: {(foodFound != null ? foodFound.transform.position.x + ", " + foodFound.transform.position.y + ", " + foodFound.transform.position.z : "none")}\n" +
-                        "Your current goal is to gather food when it's close and return it to your base, you can grab food when you are close to than, you can drop the food when you are on the base.\n\n" +
-                        "Your available actions are:\n" +
-                        "- return_to_base\n" +
-                        "- grab_food\n" +
-                        "- drop_food\n" +
-                        "- idle\n" +
-                        "- go_to_position(x,y,z)\n\n" +
-                        "Rules:\n" +
-                        "1. Return ONLY one action in JSON format as shown below.\n" +
-                        "2. Use `go_to_position` only if it's necessary, with coordinates in float.\n" +
-                        "3. Do not explain or include any extra text.\n\n" +
-                        "Example:\n" +
-                        "{ \"action\": \"search_for_food\" }\n" +
-                        "or\n" +
-                        "{ \"action\": \"go_to_position\", \"position\": { \"x\": 10.5, \"y\": 0.0, \"z\": -3.2 } }\n\n" +
-                        "IMPORTANT:\n" +
-                        "- ONLY include the `position` field if the action is \"go_to_position\".\n" +
-                        "- ALWAYS USE DOT (.) AS THE DECIMAL SEPARATOR, NEVER COMMA (,).\n" +
-                        "- Do NOT use markdown code blocks.\n" +
-                        "- Only suggest coordinates that are within the world bounds.\n" +
-                        $"- Valid positions must be within {maxDistance} meters of the current position.\n" +
-                        "- Do not invent distant or unrelated coordinates. Use known object positions when available.\n";
+                        $"Food position: {(foodFound != null ? foodFound.transform.position.x + ", " + foodFound.transform.position.y + ", " + foodFound.transform.position.z : "none")}\n";
+                       
 
         try
         {
-            llmCharacter.ClearChat();
+           // llmCharacter.ClearChat();
         }
         catch (System.Exception ex)
         {
@@ -87,12 +69,17 @@ public class FarmerThings : AIFreeWill
         string rawResponse = task.Result;
         Debug.Log("LLM Response: " + rawResponse);
 
-        string response = rawResponse
-            .Replace("```json", "")
-            .Replace("```", "")
-            .Replace("\n", "")
-            .Replace("\r", "")
-            .Trim();
+        // Try to extract only the first {...} JSON object
+        var match = Regex.Match(rawResponse, @"\{.*?\}", RegexOptions.Singleline);
+        if (!match.Success)
+        {
+            Debug.LogError("No valid JSON found in response.");
+            lastSystemMessage = "Invalid response format.";
+            onComplete?.Invoke();
+            yield break;
+        }
+
+        string response = match.Value;
 
         // Replace commas with dots for decimal parsing
         response = Regex.Replace(response, @"(?<=""[xyz]""\s*:\s*)(-?\d+),(\d+)", "$1.$2");
@@ -123,6 +110,10 @@ public class FarmerThings : AIFreeWill
             Debug.LogWarning($"Action '{result.action}' should not include a 'position' field. Ignoring it.");
             lastSystemMessage = $"Invalid 'position' field with action '{result.action}'.";
             result.position = null;
+        }
+        if (!string.IsNullOrEmpty(result.comment))
+        {
+            Debug.Log($"Comment from LLM: {result.comment}");
         }
 
         switch (result.action)

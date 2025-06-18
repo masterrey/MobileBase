@@ -516,90 +516,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &480657075 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1892958067457808443, guid: d035779bf520f38499966b00a58bd75f, type: 3}
-  m_PrefabInstance: {fileID: 8577246798971523373}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &618853115 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2244014083398086627, guid: d035779bf520f38499966b00a58bd75f, type: 3}
-  m_PrefabInstance: {fileID: 8577246798971523373}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &618853116 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 5259002207622955503, guid: d035779bf520f38499966b00a58bd75f, type: 3}
-  m_PrefabInstance: {fileID: 8577246798971523373}
-  m_PrefabAsset: {fileID: 0}
---- !u!195 &618853118
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 618853115}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
---- !u!114 &618853119
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 618853115}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35cfdbfd07597594fbf8dc0f7c4d41f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agent: {fileID: 618853118}
-  targetPosition: {x: 0, y: 0, z: 0}
-  animator: {fileID: 618853116}
-  currentState: 0
-  currentType: 0
-  basePoint: {fileID: 2013165906}
-  hand: {fileID: 480657075}
-  foodAmount: 0
-  maxFoodAmount: 5
-  maxDistance: 20
-  foodFound: {fileID: 0}
-  foodCollectedWithSucess: 0
-  lastSystemMessage: 
-  llmCharacter: {fileID: 0}
---- !u!135 &618853120
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 618853115}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 4.39
-  m_Center: {x: 0, y: 0, z: 4.09}
 --- !u!1 &806935524
 GameObject:
   m_ObjectHideFlags: 0
@@ -3116,14 +3032,85 @@ PrefabInstance:
       propertyPath: m_Name
       value: knight
       objectReference: {fileID: 0}
-    - target: {fileID: 5259002207622955503, guid: d035779bf520f38499966b00a58bd75f, type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: d1fb10419b5d98d4b85597d0f21ecd4d, type: 2}
-    - target: {fileID: 6682790079291975845, guid: d035779bf520f38499966b00a58bd75f, type: 3}
-      propertyPath: agent
-      value: 
-      objectReference: {fileID: 618853118}
+    - target: {fileID: 2875587558283577530, guid: d035779bf520f38499966b00a58bd75f, type: 3}
+      propertyPath: prompt
+      value: 'You are an autonomous farmer agent inside a simulation.
+
+        Your
+        current goal is to gather food when it''s close and return it to your base...
+
+        
+
+        Your
+        available actions are:
+
+        - return_to_base
+
+        - grab_food
+
+        -
+        drop_food
+
+        - idle
+
+        - go_to_position(x,y,z)
+
+        
+
+        **You
+        must also provide a brief comment/thought in a "comment" field about what
+        you are doing. This can be a reaction, an opinion, or a short internal monologue.**
+
+        
+
+        Rules:
+
+        1.
+        Return ONLY one action in JSON format as shown below.
+
+        2. Use `go_to_position`
+        only if it''s necessary, with coordinates in float.
+
+        3. Do not explain
+        or include any extra text.
+
+        
+
+        Example:
+
+        { "action":
+        "grab_food", "comment": "Finally! Some food nearby!" }
+
+        or
+
+        {
+        "action": "go_to_position", "position": { "x": 10.5, "y": 0.0, "z": -3.2
+        }, "comment": "Heading over there quickly." }
+
+        
+
+        IMPORTANT:
+
+        -
+        ONLY include the `position` field if the action is "go_to_position".
+
+        -
+        ALWAYS USE DOT (.) AS THE DECIMAL SEPARATOR, NEVER COMMA (,).
+
+        -
+        Do NOT use markdown code blocks.
+
+        - Only suggest coordinates that
+        are within the world bounds.
+
+        - Valid positions must be within {maxDistance}
+        meters of the current position.
+
+        - Do not invent distant or unrelated
+        coordinates. Use known object positions when available.
+
+'
+      objectReference: {fileID: 0}
     - target: {fileID: 6682790079291975845, guid: d035779bf520f38499966b00a58bd75f, type: 3}
       propertyPath: basePoint
       value: 
@@ -3131,16 +3118,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2244014083398086627, guid: d035779bf520f38499966b00a58bd75f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 618853118}
-    - targetCorrespondingSourceObject: {fileID: 2244014083398086627, guid: d035779bf520f38499966b00a58bd75f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 618853119}
-    - targetCorrespondingSourceObject: {fileID: 2244014083398086627, guid: d035779bf520f38499966b00a58bd75f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 618853120}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d035779bf520f38499966b00a58bd75f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
