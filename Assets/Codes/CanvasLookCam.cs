@@ -21,7 +21,6 @@ public class CanvasLookCam : MonoBehaviour
         {
             Debug.LogWarning("Main camera not found. Please assign a camera to the CanvasLookCam script.");
         }
-
     }
 
     // Update is called once per frame
@@ -38,7 +37,5 @@ public class CanvasLookCam : MonoBehaviour
         {
             Debug.LogWarning("Main camera not found. Please assign a camera to the CanvasLookCam script.");
         }
-
-
     }
 }

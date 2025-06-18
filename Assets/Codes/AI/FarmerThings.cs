@@ -4,7 +4,9 @@ using UnityEngine;
 using System.Text.RegularExpressions;
 using UnityEngine.LightTransport;
 using UnityEngine.UIElements;
+using Newtonsoft.Json;
 using TMPro;
+using System.Linq;
 
 public class FarmerThings : AIFreeWill
 {
@@ -15,9 +17,15 @@ public class FarmerThings : AIFreeWill
     [SerializeField] GameObject foodFound;
     [SerializeField] float foodCollectedWithSucess = 0;
     [SerializeField] string lastSystemMessage = string.Empty;
-    [SerializeField] TextMeshPro commentBubble;
+    [SerializeField] TextMeshProUGUI commentBubble;
 
     public LLMCharacter llmCharacter;
+
+    [System.Serializable]
+    public class PositionData
+    {
+        public float x, y, z;
+    }
 
     [System.Serializable]
     public class LLMActionResponse
@@ -25,12 +33,6 @@ public class FarmerThings : AIFreeWill
         public string action;
         public PositionData position;
         public string comment;
-
-        [System.Serializable]
-        public class PositionData
-        {
-            public float x, y, z;
-        }
     }
 
     new void Start()
@@ -44,24 +46,14 @@ public class FarmerThings : AIFreeWill
     public IEnumerator AskToLLMWhatToDo(System.Action onComplete)
     {
         string prompt =
-                        $"Last system message: {lastSystemMessage}\n" +
-                        $"Food: {foodAmount}/{maxFoodAmount}\n" +
-                        $"Current state: {currentState.ToString().ToLower()}\n" +
-                        $"Current position: {transform.position.x}, {transform.position.y}, {transform.position.z}\n" +
-                        $"Hand: {(hand != null && hand.transform.childCount > 0 ? "has food" : "empty")}\n" +
-                        $"Base position: {basePoint.transform.position.x}, {basePoint.transform.position.y}, {basePoint.transform.position.z}\n" +
-                        $"Food found: {(foodFound != null ? foodFound.name : "none")}\n" +
-                        $"Food position: {(foodFound != null ? foodFound.transform.position.x + ", " + foodFound.transform.position.y + ", " + foodFound.transform.position.z : "none")}\n";
-                       
-
-        try
-        {
-           // llmCharacter.ClearChat();
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError("Failed to clear chat: " + ex.Message);
-        }
+            $"Last system message: {lastSystemMessage}\n" +
+            $"Food: {foodAmount}/{maxFoodAmount}\n" +
+            $"Current state: {currentState.ToString().ToLower()}\n" +
+            $"Current position: {transform.position.x}, {transform.position.y}, {transform.position.z}\n" +
+            $"Hand: {(hand != null && hand.transform.childCount > 0 ? "has food" : "empty")}\n" +
+            $"Base position: {basePoint.transform.position.x}, {basePoint.transform.position.y}, {basePoint.transform.position.z}\n" +
+            $"Food found: {(foodFound != null ? foodFound.name : "none")}\n" +
+            $"Food position: {(foodFound != null ? foodFound.transform.position.x + ", " + foodFound.transform.position.y + ", " + foodFound.transform.position.z : "none")}\n";
 
         var task = llmCharacter.Chat(prompt);
         yield return new WaitUntil(() => task.IsCompleted);
@@ -69,25 +61,27 @@ public class FarmerThings : AIFreeWill
         string rawResponse = task.Result;
         Debug.Log("LLM Response: " + rawResponse);
 
-        // Try to extract only the first {...} JSON object
-        var match = Regex.Match(rawResponse, @"\{.*?\}", RegexOptions.Singleline);
-        if (!match.Success)
-        {
-            Debug.LogError("No valid JSON found in response.");
-            lastSystemMessage = "Invalid response format.";
-            onComplete?.Invoke();
-            yield break;
-        }
-
-        string response = match.Value;
-
-        // Replace commas with dots for decimal parsing
-        response = Regex.Replace(response, @"(?<=""[xyz]""\s*:\s*)(-?\d+),(\d+)", "$1.$2");
-
         LLMActionResponse result = null;
         try
         {
-            result = JsonUtility.FromJson<LLMActionResponse>(response);
+            // Clean up smart quotes and invisible characters
+            string cleanResponse = rawResponse
+                .Replace('“', '"')
+                .Replace('”', '"')
+                .Replace('\u0000', ' ')
+                .Trim();
+
+            // Try to extract just the valid JSON from raw string
+            int startIndex = cleanResponse.IndexOf('{');
+            int endIndex = cleanResponse.LastIndexOf('}');
+
+            if (startIndex == -1 || endIndex == -1 || endIndex <= startIndex)
+                throw new System.Exception("Could not locate JSON boundaries.");
+
+            string json = cleanResponse.Substring(startIndex, endIndex - startIndex + 1);
+            Debug.Log("Extracted JSON: " + json);
+
+            result = JsonConvert.DeserializeObject<LLMActionResponse>(json);
         }
         catch (System.Exception ex)
         {
@@ -99,7 +93,7 @@ public class FarmerThings : AIFreeWill
 
         if (result == null || string.IsNullOrEmpty(result.action))
         {
-            Debug.LogWarning("Invalid or empty LLM response: " + response);
+            Debug.LogWarning("Invalid or empty LLM response.");
             lastSystemMessage = "Invalid or empty response.";
             onComplete?.Invoke();
             yield break;
@@ -111,42 +105,50 @@ public class FarmerThings : AIFreeWill
             lastSystemMessage = $"Invalid 'position' field with action '{result.action}'.";
             result.position = null;
         }
+
         if (!string.IsNullOrEmpty(result.comment))
         {
             Debug.Log($"Comment from LLM: {result.comment}");
+            StartCoroutine(ShowComment(result.comment));
         }
 
         switch (result.action)
         {
             case "return_to_base":
                 ReturnToBase();
-                onComplete?.Invoke();
                 break;
             case "grab_food":
                 GrabFood();
-                onComplete?.Invoke();
                 break;
             case "drop_food":
                 DropFood();
-                onComplete?.Invoke();
                 break;
             case "idle":
-                onComplete?.Invoke();
                 break;
             case "go_to_position":
-                Debug.Log($"Moving");
                 if (result.position != null)
                 {
-                    Debug.Log($"to position: {result.position.x}, {result.position.y}, {result.position.z}");
+                    Debug.Log($"Moving to position: {result.position.x}, {result.position.y}, {result.position.z}");
                     SetandWaitTargetPosition(new Vector3(result.position.x, result.position.y, result.position.z));
-                    onComplete?.Invoke();
                 }
                 break;
             default:
                 Debug.LogWarning("Unrecognized action from LLM: " + result.action);
                 lastSystemMessage = "Unrecognized action from LLM: " + result.action;
-                onComplete?.Invoke();
                 break;
+        }
+
+        onComplete?.Invoke();
+    }
+
+    IEnumerator ShowComment(string text, float duration = 3f)
+    {
+        if (commentBubble != null)
+        {
+            commentBubble.text = text;
+            commentBubble.gameObject.SetActive(true);
+            yield return new WaitForSeconds(duration);
+            commentBubble.gameObject.SetActive(false);
         }
     }
 
